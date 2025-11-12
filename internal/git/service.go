@@ -28,10 +28,10 @@ func (s *GitService) Clone(repoURL, relativePath string) *models.CloneResult {
     // Calculate full path
     fullPath := filepath.Join(s.workspaceDir, relativePath)
     
-    // Check if already exists
+    // Check if already exists - if so, treat as already cloned (success)
     if s.RepositoryExists(relativePath) {
-        result.Success = false
-        result.Error = fmt.Sprintf("directory already exists: %s", fullPath)
+        result.Success = true
+        result.Output = fmt.Sprintf("repository already exists at %s, skipping clone", fullPath)
         result.Duration = time.Since(start)
         return result
     }

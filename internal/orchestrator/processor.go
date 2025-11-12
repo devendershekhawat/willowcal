@@ -2,6 +2,7 @@ package orchestrator
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/devendershekhawat/teambiscuit/internal/executor"
@@ -25,9 +26,17 @@ func ProcessRepository(
     cloneResult := gitService.Clone(repo.URL, repo.Path)
     state.CloneResult = cloneResult
     
+    // Show message if repository already exists
+    if cloneResult.Success && cloneResult.Output != "" {
+        if strings.Contains(cloneResult.Output, "already exists") || strings.Contains(cloneResult.Output, "skipping clone") {
+            reporter.PrintProgress(repo.Name, state.Status, "Repository already exists, skipping clone")
+        }
+    }
+    
     if !cloneResult.Success {
         state.Status = models.RepoStatusFailed
         state.Error = cloneResult.Error
+        reporter.PrintProgress(repo.Name, state.Status, cloneResult.Error)
         state.EndTime = time.Now()
         return state
     }

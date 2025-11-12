@@ -1,6 +1,7 @@
 package orchestrator
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/devendershekhawat/teambiscuit/internal/executor"
 	"github.com/devendershekhawat/teambiscuit/internal/git"
 	"github.com/devendershekhawat/teambiscuit/internal/models"
+	"github.com/devendershekhawat/teambiscuit/internal/reporter"
 )
 
 const (
@@ -115,8 +117,20 @@ func (o *Orchestrator) executeRetries(retryQueue []models.Repository, retryCount
         repo := retryQueue[0]
         retryQueue = retryQueue[1:]
         
-        // Process retry
-        state := ProcessRepository(repo, o.gitService, o.execService)
+        // Check previous state to see if clone succeeded
+        o.mu.Lock()
+        previousState := o.state.RepoStates[repo.Name]
+        o.mu.Unlock()
+        
+        var state *models.RepoState
+        // If clone succeeded previously, only retry setup commands
+        if previousState != nil && previousState.CloneResult != nil && previousState.CloneResult.Success {
+            state = o.retrySetupOnly(repo, previousState)
+        } else {
+            // Clone failed or no previous state, retry entire process
+            state = ProcessRepository(repo, o.gitService, o.execService)
+        }
+        
         state.CurrentRetry = retryCounts[repo.Name]
         
         o.mu.Lock()
@@ -133,6 +147,39 @@ func (o *Orchestrator) executeRetries(retryQueue []models.Repository, retryCount
             }
         }
     }
+}
+
+// retrySetupOnly retries only the setup commands, assuming clone already succeeded
+func (o *Orchestrator) retrySetupOnly(repo models.Repository, previousState *models.RepoState) *models.RepoState {
+    state := models.NewRepoState(repo.Name)
+    state.CloneResult = previousState.CloneResult // Reuse successful clone result
+    
+    // Only run setup commands
+    if len(repo.SetupCommands) > 0 {
+        state.Status = models.RepoStatusSetupRunning
+        reporter.PrintProgress(repo.Name, state.Status, fmt.Sprintf("Retrying setup commands (%d command(s))...", len(repo.SetupCommands)))
+        
+        for i, cmd := range repo.SetupCommands {
+            reporter.PrintProgress(repo.Name, state.Status, fmt.Sprintf("Executing command %d/%d: %s", i+1, len(repo.SetupCommands), cmd))
+            cmdResult := o.execService.ExecuteCommand(cmd, repo.Path)
+            state.SetupResults = append(state.SetupResults, cmdResult)
+            
+            // Stop on first command failure
+            if !cmdResult.Success {
+                state.Status = models.RepoStatusFailed
+                state.Error = fmt.Sprintf("command '%s' failed: %s", cmd, cmdResult.Error)
+                reporter.PrintProgress(repo.Name, state.Status, state.Error)
+                state.EndTime = time.Now()
+                return state
+            }
+        }
+    }
+    
+    // Success!
+    state.Status = models.RepoStatusSuccess
+    reporter.PrintProgress(repo.Name, state.Status, "Repository initialized successfully")
+    state.EndTime = time.Now()
+    return state
 }
 
 // finalizeState calculates final statistics

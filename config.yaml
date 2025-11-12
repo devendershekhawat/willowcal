@@ -1,8 +1,9 @@
 version: "1.0"
+workspace_dir: "./workspace"
 
 repositories:
   - name: backend-api
-    url: https://github.com/Snapchat/Valdi.git
+    url: https://github.com/cyclic-software/starter-express-api.git
     path: ./services/backend
     setup_commands:
       - npm install
