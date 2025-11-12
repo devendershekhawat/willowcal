@@ -1,0 +1,8 @@
+version: "1.0"
+
+repositories:
+  - name: backend-api
+    url: https://github.com/Snapchat/Valdi.git
+    path: ./services/backend
+    setup_commands:
+      - npm install

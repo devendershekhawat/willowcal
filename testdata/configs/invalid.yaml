@@ -1,0 +1,7 @@
+version: "2.0" # Invalid version
+workspace: "" # Empty workspace
+
+repositories:
+  - name: "" # Empty name
+    url: "not-a-url"
+    path: ""

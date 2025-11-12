@@ -1,0 +1,9 @@
+version: "1.0"
+workspace: "./workspace"
+
+repositories:
+  - name: backend
+    url: https://github.com/octocat/Hello-World.git
+    path: ./backend
+    setup_commands:
+      - echo "Setup complete"

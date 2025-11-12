@@ -1,0 +1,25 @@
+version: "1.0"
+workspace: "./workspace"
+
+repositories:
+  - name: backend-api
+    url: https://github.com/company/backend.git
+    path: ./backend
+    setup_commands:
+      - npm install
+      - npm run db:migrate
+      - npm run build
+
+  - name: frontend
+    url: https://github.com/company/frontend.git
+    path: ./frontend
+    setup_commands:
+      - yarn install
+      - yarn build
+
+  - name: shared-lib
+    url: https://github.com/company/shared.git
+    path: ./shared
+    setup_commands:
+      - go mod download
+      - go build

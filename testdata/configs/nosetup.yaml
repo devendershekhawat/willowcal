@@ -1,0 +1,8 @@
+version: "1.0"
+workspace: "./workspace"
+
+repositories:
+  - name: docs
+    url: https://github.com/company/docs.git
+    path: ./docs
+    # No setup commands - just clone
