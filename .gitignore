@@ -14,7 +14,7 @@ package-lock.json
 package.json
 web/node_modules/
 web/dist/
-web/package-lock.json
+# Note: web/package-lock.json is committed for reproducible Docker builds
 
 # Test files
 test_*.js
