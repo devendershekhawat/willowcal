@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import yaml from 'js-yaml';
 
 let messageId = 0;
 
@@ -147,9 +148,21 @@ export const useWebSocket = (url) => {
   }, []);
 
   const uploadConfig = useCallback((configYaml, onResponse) => {
+    // Parse the YAML on frontend to get full config structure
+    let parsedConfig = null;
+    try {
+      parsedConfig = yaml.load(configYaml);
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
     sendMessage('config.upload', { config_yaml: configYaml }, (response) => {
-      if (response.type === 'success' && response.payload.valid) {
-        setConfig(response.payload);
+      if (response.type === 'success' && response.payload.valid && parsedConfig) {
+        // Store the full parsed config with validation metadata
+        setConfig({
+          ...parsedConfig,
+          _meta: response.payload // Store validation info
+        });
       }
       if (onResponse) onResponse(response);
     });
