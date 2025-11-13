@@ -1,3 +1,7 @@
+# Git
+.git
+.gitignore
+
 # Build artifacts
 willowcal
 *.exe
@@ -5,16 +9,15 @@ willowcal
 *.so
 *.dylib
 
-# Test workspace
+# Workspace
 workspace/
 
-# Node.js
+# Node
+web/node_modules/
+web/dist/
 node_modules/
 package-lock.json
 package.json
-web/node_modules/
-web/dist/
-web/package-lock.json
 
 # Test files
 test_*.js
@@ -30,3 +33,11 @@ test_*.html
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Docs
+*.md
