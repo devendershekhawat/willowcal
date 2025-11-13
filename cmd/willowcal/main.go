@@ -5,53 +5,48 @@ import (
 	"log"
 	"os"
 
-	"github.com/devendershekhawat/teambiscuit/internal/config"
-	"github.com/devendershekhawat/teambiscuit/internal/orchestrator"
-	"github.com/devendershekhawat/teambiscuit/internal/reporter"
+	"github.com/devendershekhawat/teambiscuit/internal/commands"
 )
 
 func main() {
-    // Parse CLI args
-    if len(os.Args) < 2 {
-        log.Fatal("Usage: willowcal init <config.yaml>")
-    }
-    
-    configPath := os.Args[1]
-    
-    // Parse config
-    fmt.Println("📖 Parsing configuration...")
-    cfg, err := config.ParseConfigFile(configPath)
-    if err != nil {
-        log.Fatalf("❌ Failed to parse config: %v", err)
-    }
-    
-    fmt.Printf("✅ Config parsed successfully\n")
-    fmt.Printf("   Workspace: %s\n", cfg.WorkspaceDir)
-    fmt.Printf("   Repositories: %d\n\n", len(cfg.Repositories))
-    
-    // Get absolute workspace path
-    workspaceDir, err := cfg.GetAbsoluteWorkspace()
-    if err != nil {
-        log.Fatalf("❌ Failed to resolve workspace: %v", err)
-    }
-    
-    // Create workspace directory
-    if err := os.MkdirAll(workspaceDir, 0755); err != nil {
-        log.Fatalf("❌ Failed to create workspace: %v", err)
-    }
-    
-    // Execute
-    fmt.Println("🚀 Starting parallel initialization...")
-    fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    
-    orch := orchestrator.NewOrchestrator(cfg, workspaceDir)
-    state := orch.Execute()
-    
-    // Print summary
-    reporter.PrintFinalSummary(state)
-    
-    // Exit with appropriate code
-    if state.FailureCount > 0 {
-        os.Exit(1)
-    }
+	// Parse CLI args
+	if len(os.Args) < 3 {
+		printUsage()
+		os.Exit(1)
+	}
+
+	command := os.Args[1]
+	configPath := os.Args[2]
+
+	// Execute command
+	var err error
+	switch command {
+	case "init":
+		err = commands.InitCommand(configPath)
+	case "run":
+		err = commands.RunCommand(configPath)
+	default:
+		fmt.Printf("❌ Unknown command: %s\n\n", command)
+		printUsage()
+		os.Exit(1)
+	}
+
+	if err != nil {
+		log.Fatalf("❌ %v", err)
+	}
+}
+
+func printUsage() {
+	fmt.Println("willowcal - Repository orchestration tool")
+	fmt.Println()
+	fmt.Println("Usage:")
+	fmt.Println("  willowcal <command> <config.yaml>")
+	fmt.Println()
+	fmt.Println("Commands:")
+	fmt.Println("  init    Clone repositories and run setup commands")
+	fmt.Println("  run     Start services (clone missing repos if needed)")
+	fmt.Println()
+	fmt.Println("Examples:")
+	fmt.Println("  willowcal init config.yaml")
+	fmt.Println("  willowcal run config.yaml")
 }
