@@ -7,3 +7,8 @@ repositories:
     path: ./services/backend
     setup_commands:
       - npm install
+
+services:
+  - name: backend
+    repo: backend-api
+    run_command: npm start

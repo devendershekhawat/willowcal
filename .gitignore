@@ -1,0 +1,20 @@
+# Build artifacts
+willowcal
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test workspace
+workspace/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
