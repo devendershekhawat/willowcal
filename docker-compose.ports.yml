@@ -1,15 +1,24 @@
 version: '3.8'
 
+# Alternative: Manually specify service ports
+# Use this if you prefer explicit port mapping over host networking
+# Update the ports list to match your services
+
 services:
   willowcal:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: willowcal
-    network_mode: "host"  # Use host network - services are accessible on localhost
+    ports:
+      - "8080:8080"    # Willowcal web UI
+      - "3000:3000"    # Example: Express API
+      - "5173:5173"    # Example: Vite dev server
+      - "8000:8000"    # Example: Python app
+      # Add more ports as needed for your services
     volumes:
       - ./workspace:/app/workspace
-      - /var/run/docker.sock:/var/run/docker.sock  # Optional: for Docker-in-Docker support
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WILLOWCAL_PORT=8080
       - WORKSPACE_DIR=/app/workspace

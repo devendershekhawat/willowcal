@@ -1,5 +1,21 @@
 # 🐳 Docker Deployment Guide
 
+## ⚠️ Important: Service Networking
+
+**By default, `docker-compose.yml` uses host networking.** This means services you start will be accessible on `localhost` at their respective ports.
+
+- ✅ **Linux**: Host networking works perfectly
+- ❌ **Mac/Windows**: Host networking doesn't work on Docker Desktop
+
+**If on Mac/Windows**, run willowcal natively instead:
+```bash
+cd web && npm install && npm run build && cd ..
+go build -o willowcal ./cmd/willowcal
+./willowcal server 8080 ./workspace ./web/dist
+```
+
+See **[DOCKER_NETWORKING.md](DOCKER_NETWORKING.md)** for detailed networking options.
+
 ## Quick Start
 
 The easiest way to run Willowcal is using Docker Compose:
@@ -14,6 +30,8 @@ docker-compose up -d --build
 
 Once started, open your browser to:
 **http://localhost:8080**
+
+Your services will be accessible on their respective ports (e.g., Express on `http://localhost:3000`).
 
 ## What Happens When You Run the Container?
 
