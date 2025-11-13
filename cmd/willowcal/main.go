@@ -39,13 +39,17 @@ func main() {
 	case "server":
 		port := "8080"
 		workspaceDir := "./workspace"
+		staticDir := "./web/dist"
 		if len(os.Args) > 2 {
 			port = os.Args[2]
 		}
 		if len(os.Args) > 3 {
 			workspaceDir = os.Args[3]
 		}
-		err = commands.ServerCommand(port, workspaceDir)
+		if len(os.Args) > 4 {
+			staticDir = os.Args[4]
+		}
+		err = commands.ServerCommand(port, workspaceDir, staticDir)
 	default:
 		fmt.Printf("❌ Unknown command: %s\n\n", command)
 		printUsage()

@@ -11,7 +11,7 @@ import (
 )
 
 // ServerCommand starts the WebSocket server
-func ServerCommand(port string, workspaceDir string) error {
+func ServerCommand(port string, workspaceDir string, staticDir string) error {
 	if workspaceDir == "" {
 		workspaceDir = "./workspace"
 	}
@@ -44,9 +44,12 @@ func ServerCommand(port string, workspaceDir string) error {
 	// Start server
 	log.Printf("📡 Starting willowcal server on port %s", port)
 	log.Printf("📂 Workspace directory: %s", workspaceDir)
+	if staticDir != "" {
+		log.Printf("🌐 Web UI: http://localhost:%s", port)
+	}
 	log.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
-	if err := server.Start(); err != nil {
+	if err := server.Start(staticDir); err != nil {
 		return fmt.Errorf("server error: %w", err)
 	}
 

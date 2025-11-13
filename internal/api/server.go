@@ -38,12 +38,23 @@ func NewServer(addr string, handler *Handler) *Server {
 }
 
 // Start starts the WebSocket server
-func (s *Server) Start() error {
-	http.HandleFunc("/ws", s.handleWebSocket)
-	http.HandleFunc("/health", s.handleHealth)
+func (s *Server) Start(staticDir string) error {
+	// Setup routes
+	mux := http.NewServeMux()
+
+	// WebSocket and API routes
+	mux.HandleFunc("/ws", s.handleWebSocket)
+	mux.HandleFunc("/health", s.handleHealth)
+
+	// Serve static files from web/dist directory
+	if staticDir != "" {
+		fs := http.FileServer(http.Dir(staticDir))
+		mux.Handle("/", fs)
+		log.Printf("📁 Serving static files from %s", staticDir)
+	}
 
 	log.Printf("🚀 WebSocket server starting on %s", s.addr)
-	return http.ListenAndServe(s.addr, nil)
+	return http.ListenAndServe(s.addr, mux)
 }
 
 // Broadcast sends a message to all connected clients
