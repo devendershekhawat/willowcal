@@ -79,10 +79,10 @@ export const ConfigEditor = ({ onUpload, config }) => {
           <div className="flex items-center gap-2 text-sm">
             <div className="badge-success">
               <CheckCircle className="w-3 h-3" />
-              <span>{config.repositories} repos</span>
+              <span>{config.repositories?.length || 0} repos</span>
             </div>
             <div className="badge-info">
-              <span>{config.services} services</span>
+              <span>{config.services?.length || 0} services</span>
             </div>
           </div>
         )}
