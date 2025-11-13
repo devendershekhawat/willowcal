@@ -12,7 +12,7 @@ services:
       - ./workspace:/app/workspace
       - /var/run/docker.sock:/var/run/docker.sock  # Optional: for Docker-in-Docker support
     environment:
-      - PORT=8080
+      - WILLOWCAL_PORT=8080
       - WORKSPACE_DIR=/app/workspace
       - STATIC_DIR=/app/web/dist
     restart: unless-stopped

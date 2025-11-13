@@ -61,7 +61,7 @@ RUN mkdir -p /app/workspace
 EXPOSE 8080
 
 # Set environment variables
-ENV PORT=8080
+ENV WILLOWCAL_PORT=8080
 ENV WORKSPACE_DIR=/app/workspace
 ENV STATIC_DIR=/app/web/dist
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Play, Square, Terminal, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const ServiceCard = ({ service, onStart, onStop, onViewLogs }) => {
+export const ServiceCard = ({ service, onStart, onStop, onViewLogs, delay = 0 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const getStatusColor = (status) => {
@@ -39,7 +39,7 @@ export const ServiceCard = ({ service, onStart, onStop, onViewLogs }) => {
       onMouseLeave={() => setIsHovered(false)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, delay }}
     >
       {/* Glow effect on hover */}
       {isHovered && (
